@@ -1,0 +1,9 @@
+Flask
+flask
+requests
+bs4
+PyPortfolioOpt
+bson
+pymongo[srv]
+gunicorn
+python-dotenv
