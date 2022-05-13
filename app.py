@@ -17,6 +17,8 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 
+app = flask.Flask(__name__)
+app.config["DEBUG"] = False
 load_dotenv()
 
 
@@ -94,10 +96,6 @@ def scrapeDate(existing_data):
     data = cleanData.transpose()
 
     return cleanData
-
-
-app = flask.Flask(__name__)
-app.config["DEBUG"] = False
 
 
 @app.route('/get-prices', methods=['GET'])
@@ -343,6 +341,3 @@ def portfolio():
     final_portfolio = [{x[0]: x[1]} for x in new_portfolio]
 
     return {"portfolio": final_portfolio}
-
-
-app.run()
