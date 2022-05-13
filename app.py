@@ -55,6 +55,22 @@ def scrapePrices(date):
     return pdframe
 
 
+def scrapeDates():
+    date = datetime.date.today()
+    date -= datetime.timedelta(days=1)
+    pdframe = scrapePrices(date)
+    pdframe = pdframe.set_index('Ticker')
+    print(pdframe)
+    for i in range(300):
+        date -= datetime.timedelta(days=1)
+        frame = scrapePrices(date)
+        frame = frame.set_index('Ticker')
+        pdframe = pdframe.merge(frame, on='Ticker', how='left')
+        print(pdframe)
+    pdframe = pdframe.drop_duplicates()
+    return pdframe.to_dict()
+
+
 def scrapeDate(existing_data):
     date = datetime.date.today()
     pdframe = pd.DataFrame.from_dict(existing_data)
@@ -93,6 +109,9 @@ def prices():
     prices = db.prices
     data = prices.find_one(ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     new_data = scrapeDate(data)
+    query = {"_id": ObjectId("627d84baa29bb4d82d3213fa")}
+    newvalues = {"$set": {"prices": new_data}}
+    data = prices.update_one(query, newvalues)
     return new_data.to_dict()
 
 # Route for creating portfolio
