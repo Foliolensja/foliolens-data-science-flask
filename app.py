@@ -1,5 +1,3 @@
-
-import flask
 from flask import request, jsonify, Flask
 import os
 import requests  # Get URL data
@@ -9,18 +7,13 @@ from pandas import DataFrame as df  # shortening to make easier
 # for manipulating data after scraping
 import numpy as np
 import pandas as pd
-from pypfopt import EfficientFrontier
 from pypfopt import risk_models
-from pypfopt import expected_returns
 import random
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from dotenv import load_dotenv
 import waitress
 
 app = Flask(__name__)
-app.config["DEBUG"] = False
-load_dotenv()
 
 
 def scrapePrices(date):
@@ -352,9 +345,3 @@ def portfolio():
         "portfolio": final_portfolio,
         "tracker": dates
     }
-
-if __name__ == "__main__":
-     app.debug = False
-     app.run(port=os.environ.get("PORT", 5001))
-    #  port = int(os.environ.get('PORT', 5000))
-    #  waitress.serve(app, port=port)
