@@ -1,6 +1,6 @@
 
 import flask
-from flask import request, jsonify
+from flask import request, jsonify, Flask
 import os
 import requests  # Get URL data
 from bs4 import BeautifulSoup  # Manipulate URL data
@@ -18,7 +18,7 @@ from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import waitress
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 app.config["DEBUG"] = False
 load_dotenv()
 
@@ -314,8 +314,10 @@ def portfolio():
     cleanData = pdframe.ffill(axis=1)
 
     data = cleanData.transpose()
+    print(data)
 
     population = initialize(data)
+    # return {"res": population}
     print("Population initialized")
     # Crossover for 16 generations
     generation_count = 0
