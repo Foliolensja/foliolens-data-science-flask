@@ -11,7 +11,6 @@ from pypfopt import risk_models
 import random
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-import waitress
 
 app = Flask(__name__)
 
@@ -226,10 +225,12 @@ def portfolio():
         portfolioReturn = 0
         returns = (data.iloc[-1] - data.iloc[0])/data.iloc[0]
         for asset in portfolio:
+            print('keep alive')
             ticker, weight = asset
             portfolioReturn += returns[ticker] * weight
 
         for i in range(len(data)):
+            print('keep alive')
             dailyPortfolioValue = sum(
                 [x[1] * data.iloc[i][x[0]] for x in portfolio])
             portfolioValues.append(dailyPortfolioValue)
