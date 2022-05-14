@@ -104,7 +104,7 @@ def scrapeDate(existing_data):
 
 @app.route('/get-prices', methods=['GET'])
 def prices():
-    client = MongoClient(os.getenv("DATABASE_URL"))
+    client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
 
@@ -138,7 +138,7 @@ def mutate(portfolio):
 
 @app.route('/generate-portfolio', methods=['POST'])
 def portfolio():
-    client = MongoClient(os.getenv("DATABASE_URL"))
+    client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
 
