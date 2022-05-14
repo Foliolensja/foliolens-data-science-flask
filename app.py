@@ -230,7 +230,6 @@ def portfolio():
             portfolioReturn += returns[ticker] * weight
 
         for i in range(len(data)):
-            print('keep alive')
             dailyPortfolioValue = sum(
                 [x[1] * data.iloc[i][x[0]] for x in portfolio])
             portfolioValues.append(dailyPortfolioValue)
