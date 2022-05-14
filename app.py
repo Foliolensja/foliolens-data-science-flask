@@ -353,3 +353,8 @@ def portfolio():
         "tracker": dates
     }
 
+if __name__ == "__main__":
+     app.debug = False
+     app.run(port=os.environ.get("PORT", 5001))
+    #  port = int(os.environ.get('PORT', 5000))
+    #  waitress.serve(app, port=port)
