@@ -16,6 +16,7 @@ import random
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
+import waitress
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = False
@@ -67,7 +68,10 @@ def scrapeDates():
         date -= datetime.timedelta(days=1)
         frame = scrapePrices(date)
         frame = frame.set_index('Ticker')
-        pdframe = pdframe.merge(frame, on='Ticker', how='left')
+        if(len(pdframe.index) < len(frame.index)):
+            pdframe = pdframe.merge(frame, on='Ticker', how='right')
+        else:
+            pdframe = pdframe.merge(frame, on='Ticker', how='left')
         print(pdframe)
     pdframe = pdframe.drop_duplicates()
     return pdframe.to_dict()
@@ -85,12 +89,12 @@ def scrapeDate(existing_data):
 
     frame = frame.set_index('Ticker')
     if(len(pdframe.index) < len(frame.index)):
-        pdframe = pdframe.merge(frame, on='Ticker', how='right')
+        pdframe = pdframe.join(frame, on='Ticker', how='right')
     else:
-        pdframe = pdframe.merge(frame, on='Ticker', how='left')
+        pdframe = pdframe.join(frame, on='Ticker', how='left')
     print(pdframe)
     pdframe = pdframe.drop_duplicates()
-    pdframe.iloc[::-1]
+    return pdframe.to_dict()
     cleanData = pdframe.ffill(axis=1)
 
     data = cleanData.transpose()
@@ -110,7 +114,7 @@ def prices():
     query = {"_id": ObjectId("627d84baa29bb4d82d3213fa")}
     newvalues = {"$set": {"prices": new_data}}
     data = prices.update_one(query, newvalues)
-    return new_data.to_dict()
+    return new_data
 
 # Route for creating portfolio
 
@@ -142,6 +146,8 @@ def portfolio():
     data_prices = prices.find_one(
         ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     pdframe = pd.DataFrame.from_dict(data_prices)
+    pdframe.index.name = 'Ticker'
+    print(pdframe)
 
     req = request.json
 
@@ -219,7 +225,7 @@ def portfolio():
             ((0.9 * premium) + (0.1 * concentration_risk(portfolio)))
         return returns/risk_rating
 
-    portfolioValues = []  # @MARLON THIS LINE IS VERY IMPORTANT
+    portfolioValues = []
 
     def evalPortfolio(portfolio, data, policyRate=0.02):
         # Accepts a list of 2-tuples: ('ticker',weight between 0 and 1) and returns expected annual
@@ -305,8 +311,6 @@ def portfolio():
             new_generation.append(child2)
         return (new_generation, fitness_val)
 
-    pdframe = pdframe.drop_duplicates()
-    pdframe.iloc[::-1]
     cleanData = pdframe.ffill(axis=1)
 
     data = cleanData.transpose()
@@ -337,7 +341,17 @@ def portfolio():
 
     new_portfolio.sort(key=lambda x: x[1])
     new_portfolio.reverse()
+    datesAndValues = list(zip(list(data.index.values),portfolioValues))
 
-    final_portfolio = [{x[0]: x[1]} for x in new_portfolio]
+    final_portfolio = [{"ticker": x[0], "weight": x[1]} for x in new_portfolio]
+    dates = [{"date": x[0], "value": x[1]} for x in datesAndValues]
 
-    return {"portfolio": final_portfolio}
+    return {
+        "portfolio": final_portfolio,
+        "tracker": dates
+    }
+
+if __name__ == "__main__":
+     app.debug = False
+     port = int(os.environ.get('PORT', 5000))
+     waitress.serve(app, port=port)

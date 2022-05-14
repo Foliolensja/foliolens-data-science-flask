@@ -7,3 +7,4 @@ bson
 pymongo[srv]
 gunicorn
 python-dotenv
+waitress
