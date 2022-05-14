@@ -225,7 +225,6 @@ def portfolio():
         portfolioReturn = 0
         returns = (data.iloc[-1] - data.iloc[0])/data.iloc[0]
         for asset in portfolio:
-            print('keep alive')
             ticker, weight = asset
             portfolioReturn += returns[ticker] * weight
 
