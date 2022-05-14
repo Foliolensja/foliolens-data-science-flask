@@ -345,3 +345,6 @@ def portfolio():
         "portfolio": final_portfolio,
         "tracker": dates
     }
+
+if __name__ == "__main__":
+    app.run()
