@@ -11,8 +11,33 @@ from pypfopt import risk_models
 import random
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from celery import Celery
 
 app = Flask(__name__)
+
+app.config.update(
+    CELERY_RESULT_BACKEND=os.environ.get("CELERY_RESULT_BACKEND"),
+    CELERY_BROKER_URL=os.environ.get("CELERY_BROKER_URL"),
+    CELERY_TASK_SERIALIZER = 'json'
+)
+
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+# celery = Celery(app.name)
+celery = make_celery(app)
 
 
 def scrapePrices(date):
@@ -123,6 +148,12 @@ def mutate(portfolio):
 
 
 @app.route('/generate-portfolio', methods=['POST'])
+def gen_portfolio():
+    portfolio.apply_async()
+    return "<p>Process has started!</p>"
+
+
+@celery.task()
 def portfolio():
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
@@ -311,7 +342,8 @@ def portfolio():
     print("Population initialized")
     # Crossover for 16 generations
     generation_count = 0
-    max_generations = 16
+    # max_generations = 16
+    max_generations = 2
     fitness_list = []
     # helps to save the best population encountered in case of high local maxima
     best = [[], -1]
@@ -339,6 +371,8 @@ def portfolio():
     evaluation = evalPortfolio(new_portfolio,data)
     print(evaluation)
     dates = [{"date": x[0], "value": x[1]} for x in datesAndValues]
+
+    requests.get("https://celery-omi-test.herokuapp.com/second")
 
     return {
         "portfolio": final_portfolio,
