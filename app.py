@@ -345,10 +345,10 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     pdframe = pdframe.drop_duplicates()
     # pdframe = pdframe.replace(np.nan, 0)
     # pdframe = pdframe.ffill(axis=0)
-    pdframe = pdframe.ffill(axis=1)
+    # pdframe = pdframe.ffill(axis=1)
 
     data = pdframe.transpose()
-    data = data.fillna(data.mean(axis=0))
+    # data = data.fillna(data.mean(axis=0))
     print(data)
 
     population = initialize(data)
