@@ -17,22 +17,22 @@ app = Flask(__name__)
 
 
 
-# app.config.update(
-#     CELERY_RESULT_BACKEND=os.environ.get("CELERY_RESULT_BACKEND"),
-#     CELERY_BROKER_URL=os.environ.get("CELERY_BROKER_URL"),
-#     CELERY_TASK_SERIALIZER = 'json'
-# )
+app.config.update(
+    CELERY_RESULT_BACKEND='redis://:euc8R1MGBQkw5gOXMgwELc3hJWi8VYPS@redis-11559.c17.us-east-1-4.ec2.cloud.redislabs.com:11559/0',
+    CELERY_BROKER_URL='redis://:euc8R1MGBQkw5gOXMgwELc3hJWi8VYPS@redis-11559.c17.us-east-1-4.ec2.cloud.redislabs.com:11559/0',
+    CELERY_TASK_SERIALIZER = 'json'
+)
 def make_celery(app):
-    # celery = Celery(
-    #     app.import_name,
-    #     backend=app.config['CELERY_RESULT_BACKEND'],
-    #     broker=app.config['CELERY_BROKER_URL']
-    # )
     celery = Celery(
         app.import_name,
-        backend=os.environ.get("CELERY_RESULT_BACKEND"),
-        broker=os.environ.get("CELERY_RESULT_URL")
+        backend=app.config['CELERY_RESULT_BACKEND'],
+        broker=app.config['CELERY_BROKER_URL']
     )
+    # celery = Celery(
+    #     app.import_name,
+    #     backend=os.environ.get("CELERY_RESULT_BACKEND"),
+    #     broker=os.environ.get("CELERY_RESULT_URL")
+    # )
     celery.conf.update(app.config)
 
     class ContextTask(celery.Task):
@@ -160,8 +160,6 @@ def gen_portfolio():
     net_worth = float(req["net_worth"])
     salary = float(req["salary"])
     reported_risk = int(req["reported_risk"])
-    print(os.environ.get("DATABASE_URL"))
-    print(os.environ.get("CELERY_BROKER_URL"))
     portfolio.apply_async(args=[age,net_worth,salary,reported_risk])
     return "<p>Process has started!</p>"
 
@@ -169,9 +167,7 @@ def gen_portfolio():
 @celery.task()
 def portfolio(age,net_worth,salary,reported_risk):
     print("Test")
-    print(os.environ.get("DATABASE_URL"))
     requests.get("https://celery-omi-test.herokuapp.com/test")
-    return (1)
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
@@ -309,6 +305,7 @@ def portfolio(age,net_worth,salary,reported_risk):
 
         best_chromosome, fitness_val = select_chromosome(population)
         print("Fitness on this iteration")
+        requests.get("https://celery-omi-test.herokuapp.com/third")
         print(fitness_val)
         best_chromosome.sort()
         for portfolio in mating_pool:
