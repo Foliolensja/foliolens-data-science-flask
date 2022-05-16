@@ -160,14 +160,14 @@ def gen_portfolio():
     net_worth = float(req["net_worth"])
     salary = float(req["salary"])
     reported_risk = int(req["reported_risk"])
-    portfolio.apply_async(args=[age,net_worth,salary,reported_risk])
+    id = req["id"]
+    portfolio.apply_async(args=[age,net_worth,salary,reported_risk,id])
     return "<p>Process has started!</p>"
 
 
 @celery.task()
-def portfolio(age,net_worth,salary,reported_risk):
-    print("Test")
-    requests.get("https://celery-omi-test.herokuapp.com/test")
+def portfolio(age,net_worth,salary,reported_risk, id):
+    # requests.get("https://celery-omi-test.herokuapp.com/test")
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
@@ -305,7 +305,7 @@ def portfolio(age,net_worth,salary,reported_risk):
 
         best_chromosome, fitness_val = select_chromosome(population)
         print("Fitness on this iteration")
-        requests.get("https://celery-omi-test.herokuapp.com/third")
+        # requests.get("https://celery-omi-test.herokuapp.com/third")
         print(fitness_val)
         best_chromosome.sort()
         for portfolio in mating_pool:
@@ -385,7 +385,9 @@ def portfolio(age,net_worth,salary,reported_risk):
     print(evaluation)
     dates = [{"date": x[0], "value": x[1]} for x in datesAndValues]
 
-    requests.get("https://celery-omi-test.herokuapp.com/second")
+    # requests.get("https://celery-omi-test.herokuapp.com/second")
+    myobj = {"userId":id, "indices":final_portfolio, "tracker": dates}
+    requests.post("https://foliolens-backend.herokuapp.com/portfolios/add-indices", data =myobj)
 
     return {
         "portfolio": final_portfolio,
