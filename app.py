@@ -175,8 +175,8 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     data_prices = prices.find_one(
         ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     pdframe = pd.DataFrame.from_dict(data_prices)
-    # pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
-    pdframe.index.name = "Ticker"
+    pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
+    # pdframe.index.name = "Ticker"
     print(pdframe)
 
     # req = request.json
