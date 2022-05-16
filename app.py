@@ -356,7 +356,7 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     print("Population initialized")
     # Crossover for 16 generations
     generation_count = 0
-    max_generations = 16
+    max_generations = 2
     fitness_list = []
     # helps to save the best population encountered in case of high local maxima
     best = [[], -1]
@@ -385,8 +385,12 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     print(evaluation)
     dates = [{"date": x[0], "value": x[1]} for x in datesAndValues]
 
+
     # requests.get("https://celery-omi-test.herokuapp.com/second")
-    myobj = {"userId":id, "indices":final_portfolio, "tracker": dates}
+    # myobj = {"userId":id, "indices":final_portfolio, "tracker": dates}
+    myobj={"userId":"627fdf3c2e414387f683ad6d", 
+ "indices":[{"ticker": "ECL", "weight": 0.026636161861151236}], "tracker": [{"date": "2022-05-11", "value":36.319965}]}
+
     requests.post("https://foliolens-backend.herokuapp.com/portfolios/add-indices", data =myobj)
 
     return {
