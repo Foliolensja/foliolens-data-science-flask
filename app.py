@@ -175,8 +175,8 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     data_prices = prices.find_one(
         ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     pdframe = pd.DataFrame.from_dict(data_prices)
-    pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
-    # pdframe.index.name = "Ticker"
+    # pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
+    pdframe.index.name = "Ticker"
     print(pdframe)
 
     # req = request.json
@@ -345,10 +345,10 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     pdframe = pdframe.drop_duplicates()
     # pdframe = pdframe.replace(np.nan, 0)
     # pdframe = pdframe.ffill(axis=0)
-    # pdframe = pdframe.ffill(axis=1)
+    pdframe = pdframe.ffill(axis=1)
 
     data = pdframe.transpose()
-    # data = data.fillna(data.mean(axis=0))
+    data = data.fillna(data.mean(axis=0))
     print(data)
 
     population = initialize(data)
