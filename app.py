@@ -160,6 +160,9 @@ def gen_portfolio():
 
 @celery.task()
 def portfolio(age,net_worth,salary,reported_risk):
+    print("Test")
+    requests.get("https://celery-omi-test.herokuapp.com/test")
+    return (1)
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
