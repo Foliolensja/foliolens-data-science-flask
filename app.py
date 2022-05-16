@@ -160,6 +160,8 @@ def gen_portfolio():
     net_worth = float(req["net_worth"])
     salary = float(req["salary"])
     reported_risk = int(req["reported_risk"])
+    print(os.environ.get("DATABASE_URL"))
+    print(os.environ.get("CELERY_BROKER_URL"))
     portfolio.apply_async(args=[age,net_worth,salary,reported_risk])
     return "<p>Process has started!</p>"
 
