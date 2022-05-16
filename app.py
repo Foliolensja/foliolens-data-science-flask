@@ -154,7 +154,7 @@ def gen_portfolio():
     net_worth = float(req["net_worth"])
     salary = float(req["salary"])
     reported_risk = int(req["reported_risk"])
-    portfolio.apply_async(age,net_worth,salary,reported_risk)
+    portfolio.apply_async(args=[age,net_worth,salary,reported_risk])
     return "<p>Process has started!</p>"
 
 
