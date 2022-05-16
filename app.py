@@ -150,12 +150,16 @@ def mutate(portfolio):
 @app.route('/generate-portfolio', methods=['POST'])
 def gen_portfolio():
     req = request.json
-    portfolio.apply_async(req)
+    age = int(req["age"])
+    net_worth = float(req["net_worth"])
+    salary = float(req["salary"])
+    reported_risk = int(req["reported_risk"])
+    portfolio.apply_async(age,net_worth,salary,reported_risk)
     return "<p>Process has started!</p>"
 
 
 @celery.task()
-def portfolio(req):
+def portfolio(age,net_worth,salary,reported_risk):
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
@@ -169,10 +173,10 @@ def portfolio(req):
 
     # req = request.json
 
-    age = int(req["age"])
-    net_worth = float(req["net_worth"])
-    salary = float(req["salary"])
-    reported_risk = int(req["reported_risk"])
+    # age = int(req["age"])
+    # net_worth = float(req["net_worth"])
+    # salary = float(req["salary"])
+    # reported_risk = int(req["reported_risk"])
 
     def age_risk(age):
         # Returns a lower risk for younger persons since they have more time to recover from losses
