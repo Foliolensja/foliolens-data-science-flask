@@ -75,23 +75,17 @@ def scrapeDate(existing_data):
     pdframe.index.name = 'Ticker'
     print(pdframe)
     frame = scrapePrices(date)
-    while(pdframe.empty):
-        date -= datetime.timedelta(days=1)
-        frame = scrapePrices(date)
+    if(frame.empty):
+        return pdframe.to_dict()
 
     frame = frame.set_index('Ticker')
     if(len(pdframe.index) < len(frame.index)):
-        pdframe = pdframe.join(frame, on='Ticker', how='right')
+        pdframe = pdframe.merge(frame, on='Ticker', how='right')
     else:
         pdframe = pdframe.join(frame, on='Ticker', how='left')
     print(pdframe)
     pdframe = pdframe.drop_duplicates()
     return pdframe.to_dict()
-    cleanData = pdframe.ffill(axis=1)
-
-    data = cleanData.transpose()
-
-    return cleanData
 
 
 @app.route('/get-prices', methods=['GET'])
@@ -138,7 +132,7 @@ def portfolio():
     data_prices = prices.find_one(
         ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     pdframe = pd.DataFrame.from_dict(data_prices)
-    pdframe.index.name = 'Ticker'
+    pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
     print(pdframe)
 
     req = request.json
@@ -303,9 +297,13 @@ def portfolio():
             new_generation.append(child2)
         return (new_generation, fitness_val)
 
-    cleanData = pdframe.ffill(axis=1)
+    pdframe = pdframe.drop_duplicates()
+    # pdframe = pdframe.replace(np.nan, 0)
+    # pdframe = pdframe.ffill(axis=0)
+    pdframe = pdframe.ffill(axis=1)
 
-    data = cleanData.transpose()
+    data = pdframe.transpose()
+    data = data.fillna(data.mean(axis=0))
     print(data)
 
     population = initialize(data)
@@ -338,6 +336,8 @@ def portfolio():
     datesAndValues = list(zip(list(data.index.values),portfolioValues))
 
     final_portfolio = [{"ticker": x[0], "weight": x[1]} for x in new_portfolio]
+    evaluation = evalPortfolio(new_portfolio,data)
+    print(evaluation)
     dates = [{"date": x[0], "value": x[1]} for x in datesAndValues]
 
     return {
