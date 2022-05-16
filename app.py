@@ -167,7 +167,6 @@ def gen_portfolio():
 
 @celery.task()
 def portfolio(age,net_worth,salary,reported_risk, id):
-    # requests.get("https://celery-omi-test.herokuapp.com/test")
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
@@ -176,7 +175,8 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     data_prices = prices.find_one(
         ObjectId("627d84baa29bb4d82d3213fa"))["prices"]
     pdframe = pd.DataFrame.from_dict(data_prices)
-    pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
+    # pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
+    pdframe.index.name = "Ticker"
     print(pdframe)
 
     # req = request.json
