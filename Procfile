@@ -1,2 +1,2 @@
 web: gunicorn wsgi:app
-worker: celery -A foliolens-data-science worker -l info -B
+worker: celery --app=app.celery
