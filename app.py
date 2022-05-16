@@ -149,12 +149,13 @@ def mutate(portfolio):
 
 @app.route('/generate-portfolio', methods=['POST'])
 def gen_portfolio():
-    portfolio.apply_async()
+    req = request.json
+    portfolio.apply_async(req)
     return "<p>Process has started!</p>"
 
 
 @celery.task()
-def portfolio():
+def portfolio(req):
     client = MongoClient(os.environ.get("DATABASE_URL"))
     print("Connection Successful")
     db = client.database
@@ -166,7 +167,7 @@ def portfolio():
     pdframe = pd.read_csv("cleanData.csv").set_index("Ticker")
     print(pdframe)
 
-    req = request.json
+    # req = request.json
 
     age = int(req["age"])
     net_worth = float(req["net_worth"])
