@@ -15,17 +15,23 @@ from celery import Celery
 
 app = Flask(__name__)
 
-app.config.update(
-    CELERY_RESULT_BACKEND=os.environ.get("CELERY_RESULT_BACKEND"),
-    CELERY_BROKER_URL=os.environ.get("CELERY_BROKER_URL"),
-    CELERY_TASK_SERIALIZER = 'json'
-)
 
+
+# app.config.update(
+#     CELERY_RESULT_BACKEND=os.environ.get("CELERY_RESULT_BACKEND"),
+#     CELERY_BROKER_URL=os.environ.get("CELERY_BROKER_URL"),
+#     CELERY_TASK_SERIALIZER = 'json'
+# )
 def make_celery(app):
+    # celery = Celery(
+    #     app.import_name,
+    #     backend=app.config['CELERY_RESULT_BACKEND'],
+    #     broker=app.config['CELERY_BROKER_URL']
+    # )
     celery = Celery(
         app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
+        backend=os.environ.get("CELERY_RESULT_BACKEND"),
+        broker=os.environ.get("CELERY_RESULT_URL")
     )
     celery.conf.update(app.config)
 
@@ -161,6 +167,7 @@ def gen_portfolio():
 @celery.task()
 def portfolio(age,net_worth,salary,reported_risk):
     print("Test")
+    print(os.environ.get("DATABASE_URL"))
     requests.get("https://celery-omi-test.herokuapp.com/test")
     return (1)
     client = MongoClient(os.environ.get("DATABASE_URL"))
