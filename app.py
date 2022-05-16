@@ -180,7 +180,11 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     print(pdframe)
 
     # req = request.json
+    myobj={"userId":"627fdf3c2e414387f683ad6d", 
+ "indices":[{"ticker": "ECL", "weight": 0.026636161861151236}], "tracker": [{"date": "2022-05-11", "value":36.319965}]}
 
+    requests.post("https://foliolens-backend.herokuapp.com/portfolios/test", json =myobj)
+    requests.get("https://celery-omi-test.herokuapp.com/test")
     # age = int(req["age"])
     # net_worth = float(req["net_worth"])
     # salary = float(req["salary"])
@@ -391,7 +395,7 @@ def portfolio(age,net_worth,salary,reported_risk, id):
     myobj={"userId":"627fdf3c2e414387f683ad6d", 
  "indices":[{"ticker": "ECL", "weight": 0.026636161861151236}], "tracker": [{"date": "2022-05-11", "value":36.319965}]}
 
-    requests.post("https://foliolens-backend.herokuapp.com/portfolios/add-indices", data =myobj)
+    requests.post("https://foliolens-backend.herokuapp.com/portfolios/add-indices", json =myobj)
 
     return {
         "portfolio": final_portfolio,
