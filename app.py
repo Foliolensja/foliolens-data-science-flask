@@ -387,9 +387,9 @@ def portfolio(age,net_worth,salary,reported_risk, id):
 
 
     # requests.get("https://celery-omi-test.herokuapp.com/second")
-    # myobj = {"userId":id, "indices":final_portfolio, "tracker": dates}
-    myobj={"userId":"627fdf3c2e414387f683ad6d", 
- "indices":[{"ticker": "ECL", "weight": 0.026636161861151236}], "tracker": [{"date": "2022-05-11", "value":36.319965}]}
+    myobj = {"userId":id, "indices":final_portfolio, "tracker": dates}
+#     myobj={"userId":"627fdf3c2e414387f683ad6d", 
+#  "indices":[{"ticker": "ECL", "weight": 0.026636161861151236}], "tracker": [{"date": "2022-05-11", "value":36.319965}]}
 
     requests.post("https://foliolens-backend.herokuapp.com/portfolios/add-indices", data =myobj)
 
