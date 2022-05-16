@@ -356,8 +356,7 @@ def portfolio(age,net_worth,salary,reported_risk):
     print("Population initialized")
     # Crossover for 16 generations
     generation_count = 0
-    # max_generations = 16
-    max_generations = 2
+    max_generations = 16
     fitness_list = []
     # helps to save the best population encountered in case of high local maxima
     best = [[], -1]
