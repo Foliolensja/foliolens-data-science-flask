@@ -280,7 +280,7 @@ def portfolio(age,net_worth,salary,reported_risk, id):
         volatility = np.sqrt(variance)
         #print('Volatility: ' + '{:.1%}'.format(volatility))
         sharpeRatio = (portfolioReturn - policyRate)/volatility
-        #print("Sharpe Ratio: " + '{:.3}'.format(sharpeRatio))
+        print("Sharpe Ratio: " + '{:.3}'.format(sharpeRatio))
         return (portfolioReturn, volatility, sharpeRatio)
 
     def select_chromosome(population):
