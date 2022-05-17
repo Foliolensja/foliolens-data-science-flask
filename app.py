@@ -268,7 +268,7 @@ def portfolio(age,net_worth,salary,reported_risk, id):
 
         for i in range(len(data)):
             dailyPortfolioValue = sum(
-                [x[1] * data.iloc[i][x[0]] for x in portfolio if x[1] >= 0.01])
+                [x[1] * data.iloc[i][x[0]] for x in portfolio])
             portfolioValues.append(dailyPortfolioValue)
 
         #print('Return: ' + '{:.1%}'.format(portfolioReturn))
