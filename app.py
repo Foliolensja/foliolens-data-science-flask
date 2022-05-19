@@ -15,24 +15,17 @@ from celery import Celery
 
 app = Flask(__name__)
 
-
+# See the Jupyter Notebook repository for detailed documentation
 
 app.config.update(
-    CELERY_RESULT_BACKEND='redis://:euc8R1MGBQkw5gOXMgwELc3hJWi8VYPS@redis-11559.c17.us-east-1-4.ec2.cloud.redislabs.com:11559/0',
-    CELERY_BROKER_URL='redis://:euc8R1MGBQkw5gOXMgwELc3hJWi8VYPS@redis-11559.c17.us-east-1-4.ec2.cloud.redislabs.com:11559/0',
     CELERY_TASK_SERIALIZER = 'json'
 )
 def make_celery(app):
     celery = Celery(
         app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
+        backend= os.environ.get("CELERY_RESULT_BACKEND"),
+        broker=os.environ.get("CELERY_BROKER_URL")
     )
-    # celery = Celery(
-    #     app.import_name,
-    #     backend=os.environ.get("CELERY_RESULT_BACKEND"),
-    #     broker=os.environ.get("CELERY_RESULT_URL")
-    # )
     celery.conf.update(app.config)
 
     class ContextTask(celery.Task):
@@ -80,7 +73,7 @@ def scrapePrices(date):
     pdframe = df(data)
     return pdframe
 
-
+# This function was only used initially to generate the initial dataset
 def scrapeDates():
     date = datetime.date.today()
     date -= datetime.timedelta(days=1)
@@ -133,8 +126,6 @@ def prices():
     data = prices.update_one(query, newvalues)
     return new_data
 
-# Route for creating portfolio
-
 
 def initialize(data, n=48):
     # We create n portfolios with random weights as our initial population
@@ -152,7 +143,7 @@ def mutate(portfolio):
     portfolio[asset1position], portfolio[asset2position] = portfolio[asset2position], portfolio[asset1position]
     return portfolio
 
-
+# Create Portfolio Route
 @app.route('/generate-portfolio', methods=['POST'])
 def gen_portfolio():
     req = request.json
